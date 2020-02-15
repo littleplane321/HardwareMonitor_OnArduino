@@ -86,33 +86,28 @@ namespace SensorDataGet
             timer1.Interval = time;
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             GetDataFromAIDA64();
-            label5.Text = SendToArduino();
+            label5.Text = TheStringToSent();
         }
 
-        private String SendToArduino() {
+        private String TheStringToSent() {
 
-            String StringToSend = "";
+            String StringToSent = "";
             for (int x = 0; x < treeView.Nodes.Count; x++)
             {
                 for (int y = 0; y < treeView.Nodes[x].Nodes.Count; y++) {
                     if (treeView.Nodes[x].Nodes[y].Checked) {
-                        StringToSend += "<" + treeView.Nodes[x].Text + ">" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[1].InnerText + ":" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText+"\n";
+                        StringToSent += "<" + treeView.Nodes[x].Text + ">" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[1].InnerText + ":" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText+"\n";
                     }
                 }
             }
-            return StringToSend;
+            return StringToSent;
         }
 
         private void InitializeForm() {
-            treeView.Nodes.Clear();
+            treeView.Nodes.Clear();//將Dictionary中的資料分別建立選項 供選擇那些要傳給Arduino
             foreach (KeyValuePair<string,List<XmlNode>> item in DataDictionaryFromAida64){
                 TreeNode mainNode = new TreeNode(item.Key) {Checked = true};
                 foreach (XmlNode node in item.Value) {
@@ -130,9 +125,11 @@ namespace SensorDataGet
             XmlDocument DataXml = new XmlDocument();
             try
             {
+                //從AIDA64獲取電腦感應器資料
                 MemoryMappedFile Aida64_Data = MemoryMappedFile.OpenExisting("AIDA64_SensorValues");
                 MemoryMappedViewStream stream = Aida64_Data.CreateViewStream();
                 StreamReader reader = new StreamReader(stream);
+                //將資料轉換成XML格式
                 data = "<Root>" + reader.ReadToEnd() + "</Root>";
                 label_AIDA64_IsConnect.Text = "已連線";
                 label_AIDA64_IsConnect.BackColor = Color.Green;
@@ -142,13 +139,18 @@ namespace SensorDataGet
                 {
                     try
                     {
-                        //XML讀取                  
+                        //資料讀取(XML格式)                  
                         DataXml.LoadXml(data);
                         label7.Text = "狀態正常";
                     }
-                    catch(Exception e) { label7.Text = "error\n (等待數秒直到錯誤解除,等太久就重開)"+"\n"+e.Message; reader.DiscardBufferedData(); stream.Flush(); return new XmlDocument(); }
+                    catch(Exception e) {
+                        label7.Text = "error\n (等待數秒直到錯誤解除,等太久就重開)"+"\n"+e.Message;
+                        reader.DiscardBufferedData();
+                        stream.Flush();
+                        return new XmlDocument();
+                    }
                     DataDictionaryFromAida64.Clear();
-                    foreach (XmlNode xmlNode in DataXml.FirstChild.ChildNodes) {
+                    foreach (XmlNode xmlNode in DataXml.FirstChild.ChildNodes) {//將資料分類存入dictionary中<KEY:資料列別，VALUE:資料內容(以LIST形式儲存)>
                         if (!DataDictionaryFromAida64.ContainsKey(xmlNode.Name)){
                             DataDictionaryFromAida64.Add(xmlNode.Name, new List<XmlNode>() {xmlNode});
                         }
@@ -158,10 +160,11 @@ namespace SensorDataGet
                     }
 
                     if (!Initialize)
-                        InitializeForm();
+                        InitializeForm();//初始化傳輸給ARDUINO資料的選項區
 
                     if (!LightWeightMode)
                     {
+                        //將資料顯示在感應器數據顯示框中
                         label_LowCpu.Visible = false;
                         dataSet1.Clear();
                         dataSet1.ReadXml(new XmlNodeReader(DataXml));
