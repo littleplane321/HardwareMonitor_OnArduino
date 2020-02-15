@@ -51,6 +51,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.label_LowCpu = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -280,12 +281,24 @@
             this.label9.TabIndex = 24;
             this.label9.Text = "程式運行狀況";
             // 
+            // label_LowCpu
+            // 
+            this.label_LowCpu.AutoSize = true;
+            this.label_LowCpu.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.label_LowCpu.Font = new System.Drawing.Font("標楷體", 15F);
+            this.label_LowCpu.Location = new System.Drawing.Point(162, 553);
+            this.label_LowCpu.Name = "label_LowCpu";
+            this.label_LowCpu.Size = new System.Drawing.Size(239, 20);
+            this.label_LowCpu.TabIndex = 25;
+            this.label_LowCpu.Text = "低CPU負擔模式不顯示數據";
+            // 
             // 電腦數據顯示程式
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(1250, 785);
+            this.Controls.Add(this.label_LowCpu);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label8);
@@ -339,6 +352,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label_LowCpu;
     }
 }
 

@@ -162,6 +162,7 @@ namespace SensorDataGet
 
                     if (!LightWeightMode)
                     {
+                        label_LowCpu.Visible = false;
                         dataSet1.Clear();
                         dataSet1.ReadXml(new XmlNodeReader(DataXml));
                         for (int x = 0; x < (dataSet1.Tables.Count - 1); x++)
@@ -177,6 +178,7 @@ namespace SensorDataGet
                     }
                     else {
                         dataGridView1.DataSource = null;
+                        label_LowCpu.Visible = true;
                     }
                 }
             }
