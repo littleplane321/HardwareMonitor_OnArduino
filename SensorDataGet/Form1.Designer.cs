@@ -29,10 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Utility");
-            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Temp");
-            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Volt");
-            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Power");
             this.checkBox_update_0 = new System.Windows.Forms.CheckBox();
             this.checkBox_update_1 = new System.Windows.Forms.CheckBox();
             this.checkBox_update_3 = new System.Windows.Forms.CheckBox();
@@ -51,6 +47,11 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.checkBox_lightweightMode = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -133,7 +134,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("標楷體", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.label2.Location = new System.Drawing.Point(203, 35);
+            this.label2.Location = new System.Drawing.Point(221, 35);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(124, 27);
             this.label2.TabIndex = 9;
@@ -195,23 +196,6 @@
             this.treeView.FullRowSelect = true;
             this.treeView.Location = new System.Drawing.Point(89, 70);
             this.treeView.Name = "treeView";
-            treeNode13.Checked = true;
-            treeNode13.Name = "Utility";
-            treeNode13.Text = "Utility";
-            treeNode14.Checked = true;
-            treeNode14.Name = "Temp";
-            treeNode14.Text = "Temp";
-            treeNode15.Checked = true;
-            treeNode15.Name = "Volt";
-            treeNode15.Text = "Volt";
-            treeNode16.Checked = true;
-            treeNode16.Name = "Pwr";
-            treeNode16.Text = "Power";
-            this.treeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode13,
-            treeNode14,
-            treeNode15,
-            treeNode16});
             this.treeView.Size = new System.Drawing.Size(387, 255);
             this.treeView.TabIndex = 16;
             this.treeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterCheck);
@@ -253,12 +237,71 @@
             this.label6.Text = "送到Arduino的資料";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // checkBox_lightweightMode
+            // 
+            this.checkBox_lightweightMode.AutoSize = true;
+            this.checkBox_lightweightMode.Font = new System.Drawing.Font("標楷體", 20F);
+            this.checkBox_lightweightMode.Location = new System.Drawing.Point(540, 704);
+            this.checkBox_lightweightMode.Name = "checkBox_lightweightMode";
+            this.checkBox_lightweightMode.Size = new System.Drawing.Size(213, 31);
+            this.checkBox_lightweightMode.TabIndex = 20;
+            this.checkBox_lightweightMode.Text = "低CPU負擔模式";
+            this.checkBox_lightweightMode.UseVisualStyleBackColor = true;
+            this.checkBox_lightweightMode.CheckedChanged += new System.EventHandler(this.checkBox_lightweightMode_CheckedChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("標楷體", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label8.Location = new System.Drawing.Point(203, 341);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(152, 27);
+            this.label8.TabIndex = 22;
+            this.label8.Text = "感應器數據";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label7
+            // 
+            this.label7.AutoEllipsis = true;
+            this.label7.Font = new System.Drawing.Font("標楷體", 12F);
+            this.label7.Location = new System.Drawing.Point(798, 573);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(400, 200);
+            this.label7.TabIndex = 23;
+            this.label7.Text = "狀況說明";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("標楷體", 20F);
+            this.label9.Location = new System.Drawing.Point(912, 531);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(180, 27);
+            this.label9.TabIndex = 24;
+            this.label9.Text = "程式運行狀況";
+            // 
+            // label10
+            // 
+            this.label10.AutoEllipsis = true;
+            this.label10.Location = new System.Drawing.Point(87, 764);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(1000, 150);
+            this.label10.TabIndex = 25;
+            this.label10.Text = "label10";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // 電腦數據顯示程式
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(1250, 791);
+            this.ClientSize = new System.Drawing.Size(1250, 922);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.checkBox_lightweightMode);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.dataGridView1);
@@ -304,6 +347,11 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.CheckBox checkBox_lightweightMode;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
     }
 }
 

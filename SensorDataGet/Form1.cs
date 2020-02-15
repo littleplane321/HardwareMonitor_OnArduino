@@ -15,8 +15,11 @@ namespace SensorDataGet
 {
     public partial class 電腦數據顯示程式 : Form
     {
-        public XmlNodeList[] DataFromAIDA64 = new XmlNodeList[4];
+
+        public Dictionary<string, List<XmlNode>> DataDictionaryFromAida64 = new Dictionary<string, List<XmlNode>>();
         public bool Initialize = false;
+        public bool LightWeightMode = false;
+        private int DataSetRowCount = 0;
 
         public 電腦數據顯示程式()
         {
@@ -97,12 +100,11 @@ namespace SensorDataGet
         private String SendToArduino() {
 
             String StringToSend = "";
-            for (int x = 0; x < 4; x++)
+            for (int x = 0; x < treeView.Nodes.Count; x++)
             {
                 for (int y = 0; y < treeView.Nodes[x].Nodes.Count; y++) {
                     if (treeView.Nodes[x].Nodes[y].Checked) {
-                        //StringToSend += treeView.Nodes[x].Nodes[y].Text + " = "+ treeView.Nodes[x].Nodes[y].Checked +  "\n";
-                        StringToSend += "<" + treeView.Nodes[x].Text + ">" + DataFromAIDA64[x][y].ChildNodes[1].InnerText + ":" + DataFromAIDA64[x][y].ChildNodes[2].InnerText+"\n";
+                        StringToSend += "<" + treeView.Nodes[x].Text + ">" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[1].InnerText + ":" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText+"\n";
                     }
                 }
             }
@@ -110,14 +112,14 @@ namespace SensorDataGet
         }
 
         private void InitializeForm() {
-            for (int x = 0; x < 4; x++)
-            {
-                foreach (XmlNode node in DataFromAIDA64[x])
-                {
-                    TreeNode newNode = new TreeNode(node.ChildNodes[1].InnerText);
-                    newNode.Checked = true;
-                    treeView.Nodes[x].Nodes.Add(newNode);
+            treeView.Nodes.Clear();
+            foreach (KeyValuePair<string,List<XmlNode>> item in DataDictionaryFromAida64){
+                TreeNode mainNode = new TreeNode(item.Key) {Checked = true};
+                foreach (XmlNode node in item.Value) {
+                    TreeNode newNode = new TreeNode(node.ChildNodes[1].InnerText) {Checked = true};
+                    mainNode.Nodes.Add(newNode);
                 }
+                treeView.Nodes.Add(mainNode);
             }
             Initialize = true;
         }
@@ -132,34 +134,51 @@ namespace SensorDataGet
                 MemoryMappedViewStream stream = Aida64_Data.CreateViewStream();
                 StreamReader reader = new StreamReader(stream);
                 data = "<Root>" + reader.ReadToEnd() + "</Root>";
+                label10.Text = "()"+ data.Replace("\0", " ") +"(end)";
                 label_AIDA64_IsConnect.Text = "已連線";
                 label_AIDA64_IsConnect.BackColor = Color.Green;
                 data = data.Replace("\0", " ");
                 
                 if (data != "")
                 {
-                    //XML讀取                  
-                    DataXml.LoadXml(data);
-                    XmlNodeList UtilNodes = DataXml.FirstChild.SelectNodes("sys");
-                    XmlNodeList TempNodes = DataXml.FirstChild.SelectNodes("temp");
-                    XmlNodeList VoltNodes = DataXml.FirstChild.SelectNodes("volt");
-                    XmlNodeList PwrNodes = DataXml.FirstChild.SelectNodes("pwr");
-
-                    DataFromAIDA64[0] = UtilNodes;
-                    DataFromAIDA64[1] = TempNodes;
-                    DataFromAIDA64[2] = VoltNodes;
-                    DataFromAIDA64[3] = PwrNodes;
+                    try
+                    {
+                        //XML讀取                  
+                        DataXml.LoadXml(data);
+                        label7.Text = "狀態正常";
+                    }
+                    catch(Exception e) { label7.Text = "error\n (等待數秒直到錯誤解除,等太久就重開)"+"\n"+e.Message; reader.DiscardBufferedData(); stream.Flush(); return new XmlDocument(); }
+                    DataDictionaryFromAida64.Clear();
+                    foreach (XmlNode xmlNode in DataXml.FirstChild.ChildNodes) {
+                        if (!DataDictionaryFromAida64.ContainsKey(xmlNode.Name)){
+                            DataDictionaryFromAida64.Add(xmlNode.Name, new List<XmlNode>() {xmlNode});
+                        }
+                        else {
+                            DataDictionaryFromAida64[xmlNode.Name].Add(xmlNode);
+                        }
+                    }
 
                     if (!Initialize)
                         InitializeForm();
 
-                    dataSet1.Clear();
-                    dataSet1.ReadXml(new XmlNodeReader(DataXml));
-                    for (int x = 0; x < (dataSet1.Tables.Count-1); x++) {
-                        dataSet1.Tables[0].Merge(dataSet1.Tables[x+1]);
+                    if (!LightWeightMode)
+                    {
+                        dataSet1.Clear();
+                        dataSet1.ReadXml(new XmlNodeReader(DataXml));
+                        for (int x = 0; x < (dataSet1.Tables.Count - 1); x++)
+                        {
+                            dataSet1.Tables[0].Merge(dataSet1.Tables[x + 1]);
+                        }
+                        dataGridView1.DataSource = dataSet1.Tables[0];
+
+                        if (DataSetRowCount != dataGridView1.RowCount) {
+                            DataSetRowCount = dataGridView1.RowCount;
+                            InitializeForm();
+                        }
                     }
-                    dataGridView1.DataSource = dataSet1.Tables[0];
-                    dataGridView1.Update();
+                    else {
+                        dataGridView1.DataSource = null;
+                    }
                 }
             }
             catch (FileNotFoundException) {
@@ -176,5 +195,11 @@ namespace SensorDataGet
                 ChildNode.Checked = e.Node.Checked;
             }
         }
+
+        private void checkBox_lightweightMode_CheckedChanged(object sender, EventArgs e)
+        {
+            LightWeightMode = checkBox_lightweightMode.Checked;
+        }
+
     }
 }
