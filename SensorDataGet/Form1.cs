@@ -134,7 +134,6 @@ namespace SensorDataGet
                 MemoryMappedViewStream stream = Aida64_Data.CreateViewStream();
                 StreamReader reader = new StreamReader(stream);
                 data = "<Root>" + reader.ReadToEnd() + "</Root>";
-                label10.Text = "()"+ data.Replace("\0", " ") +"(end)";
                 label_AIDA64_IsConnect.Text = "已連線";
                 label_AIDA64_IsConnect.BackColor = Color.Green;
                 data = data.Replace("\0", " ");

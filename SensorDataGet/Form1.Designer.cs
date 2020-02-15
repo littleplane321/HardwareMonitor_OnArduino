@@ -51,7 +51,6 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -281,23 +280,12 @@
             this.label9.TabIndex = 24;
             this.label9.Text = "程式運行狀況";
             // 
-            // label10
-            // 
-            this.label10.AutoEllipsis = true;
-            this.label10.Location = new System.Drawing.Point(87, 764);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(1000, 150);
-            this.label10.TabIndex = 25;
-            this.label10.Text = "label10";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // 電腦數據顯示程式
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(1250, 922);
-            this.Controls.Add(this.label10);
+            this.ClientSize = new System.Drawing.Size(1250, 785);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label8);
@@ -351,7 +339,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
     }
 }
 
