@@ -218,22 +218,22 @@
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
+            this.label5.AutoEllipsis = true;
             this.label5.Font = new System.Drawing.Font("標楷體", 12F);
-            this.label5.Location = new System.Drawing.Point(845, 93);
+            this.label5.Location = new System.Drawing.Point(817, 70);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(0, 16);
+            this.label5.Size = new System.Drawing.Size(353, 425);
             this.label5.TabIndex = 18;
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
+            this.label6.AutoEllipsis = true;
             this.label6.Font = new System.Drawing.Font("標楷體", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.label6.Location = new System.Drawing.Point(842, 35);
+            this.label6.Location = new System.Drawing.Point(868, 35);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(250, 27);
             this.label6.TabIndex = 19;
-            this.label6.Text = "送到Arduino的資料";
+            this.label6.Text = "傳給Arduino的資料";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // checkBox_lightweightMode
