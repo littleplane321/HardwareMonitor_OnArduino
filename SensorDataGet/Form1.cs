@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO.MemoryMappedFiles;
 using System.IO;
 using System.Xml;
+using System.Management;
 
 namespace SensorDataGet
 {
@@ -25,6 +26,8 @@ namespace SensorDataGet
         {
             InitializeComponent();
             GetDataFromAIDA64();
+            CheckArduinoConnect();
+            
         }
 
         private void checkBox_update_0_CheckedChanged(object sender, EventArgs e){
@@ -89,7 +92,11 @@ namespace SensorDataGet
         private void timer1_Tick(object sender, EventArgs e)
         {
             GetDataFromAIDA64();
-            label5.Text = TheStringToSent();
+            string sendString = TheStringToSent();
+            label5.Text = sendString;
+            if (serialPort_ToArduino.IsOpen) {
+                serialPort_ToArduino.WriteLine("[1]"+sendString);
+            }
         }
 
         private String TheStringToSent() {
@@ -141,7 +148,7 @@ namespace SensorDataGet
                     {
                         //資料讀取(XML格式)                  
                         DataXml.LoadXml(data);
-                        label7.Text = "狀態正常";
+                        //label7.Text = "狀態正常";
                     }
                     catch(Exception e) {
                         label7.Text = "error\n (等待數秒直到錯誤解除,等太久就重開)"+"\n"+e.Message;
@@ -205,5 +212,40 @@ namespace SensorDataGet
             LightWeightMode = checkBox_lightweightMode.Checked;
         }
 
+        private String FindArduino() {
+            ManagementScope managementScope = new ManagementScope();
+            SelectQuery selectQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
+            ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(managementScope, selectQuery);
+            String allPort = "start("+ managementObjectSearcher.Get().Count+")";
+            try{
+                foreach (ManagementObject item in managementObjectSearcher.Get()){
+                    string devices = item["Description"].ToString();
+                    string deviceid = item["DeviceID"].ToString();
+                    if (devices.Contains("Arduino")){
+                        return deviceid;
+                    }
+                    allPort += item["Description"].ToString() + ",";
+                }
+            }catch (ManagementException e){ }
+            return allPort;
+        }//https://stackoverflow.com/questions/3293889/how-to-auto-detect-arduino-com-port
+
+
+        private void CheckArduinoConnect() {
+            String PortName = FindArduino();
+            if (PortName != null)
+            {
+                serialPort_ToArduino.PortName = "COM4";//PortName;
+                serialPort_ToArduino.BaudRate = 115200;
+                try
+                {
+                    serialPort_ToArduino.Open();
+                    label_Arduino_IsConnect.Text = "已連線";
+                    label_Arduino_IsConnect.BackColor = Color.Green;
+                }
+                catch (Exception e){ }
+            }
+            else { label7.Text = PortName; }
+        }
     }
 }
