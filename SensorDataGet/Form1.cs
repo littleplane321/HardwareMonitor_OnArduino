@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.MemoryMappedFiles;
 using System.IO;
+using System.IO.Ports;
 using System.Xml;
 using System.Management;
 
@@ -263,34 +264,33 @@ namespace SensorDataGet
             ManagementScope managementScope = new ManagementScope();
             SelectQuery selectQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
             ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(managementScope, selectQuery);
-            String allPort = "start(" + managementObjectSearcher.Get().Count + ")";
             try
             {
                 foreach (ManagementObject item in managementObjectSearcher.Get())
-                {
-                    string devices = item["Description"].ToString();
-                    string deviceid = item["DeviceID"].ToString();
-                    if (devices.Contains("CH340"))
-                    {
-                        return deviceid;
-                    }
-                    allPort += item["Description"].ToString() + ",";
-                }
+                 {
+                     string devices = item["Description"].ToString();
+                     string deviceid = item["DeviceID"].ToString();
+                     if (devices.Contains("CH340"))
+                     {
+                         return deviceid;
+                     }
+                 }
             }
             catch (ManagementException e) { }
-            return allPort;
+            return "";
         }//https://stackoverflow.com/questions/3293889/how-to-auto-detect-arduino-com-port
-
+        //只能找到正版Arduino 盜版的不行
 
         private void CheckArduinoConnect()
         {
             String PortName = FindArduino();
             if (PortName != null)
             {
-                serialPort_ToArduino.PortName = "COM3";//PortName;
+                serialPort_ToArduino.PortName = "COM3";//正版Arduino的改成PortName;即可自動偵測 盜版的請自行輸入
                 serialPort_ToArduino.BaudRate = 115200;
                 try
                 {
+                    label7.Text = PortName;
                     serialPort_ToArduino.Open();
                     if (serialPort_ToArduino.IsOpen)
                     {
