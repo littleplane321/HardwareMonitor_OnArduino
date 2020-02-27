@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO.MemoryMappedFiles;
 using System.IO;
 using System.Xml;
+using System.Management;
 
 namespace SensorDataGet
 {
@@ -28,6 +29,7 @@ namespace SensorDataGet
         {
             InitializeComponent();
             GetDataFromAIDA64();
+            CheckArduinoConnect();
         }
 
         private void checkBox_update_0_CheckedChanged(object sender, EventArgs e){
@@ -92,7 +94,9 @@ namespace SensorDataGet
         private void timer1_Tick(object sender, EventArgs e)
         {
             GetDataFromAIDA64();
-            label5.Text = TheStringToSent();
+            String sendstring = TheStringToSent();
+            label5.Text = sendstring;
+            serialPort_ToArduino.WriteLine(sendstring);
         }
 
         private String TheStringToSent() {
@@ -106,6 +110,7 @@ namespace SensorDataGet
                     }*/
                     switch (DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[1].InnerText){
                         case "CPU Utilization":
+
                             data[0] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
                             break;
                         case "Memory Utilization":
@@ -126,16 +131,16 @@ namespace SensorDataGet
                         case "GPU Utilization":
                             data[3] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
                             break;
-                        case "GPU":
+                        case "GPU Diode":
                             data[4] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
                             break;
-                        case "GPU Dedicated Memory Utilization":
+                        case "Video Memory Utilization":
                             data[5] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
                             break;
-                        case "GPU Used Dedicated Memory":
+                        case "Used Video Memory":
                             data[6] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
                             break;
-                        case "GPU Free Dedicated Memory":
+                        case "Free Video Memory":
                             data[7] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
                             break;
                         default:
@@ -145,13 +150,13 @@ namespace SensorDataGet
                 }
             }
 
-            for (int x = 0; x < 10; x++) {
+            for (int x = 0; x < 11; x++) {
                 if(data[x] != null)
-                    StringToSent += data[x]+',';
+                    StringToSent +=(x+1)+":"+ data[x]+',';
                 else
-                    StringToSent += "000" + ',';
+                    StringToSent +=(x+1)+":"+ "000" + ',';
             }
-            return StringToSent+data[10];
+            return StringToSent;
         }
 
         private void InitializeForm() {
@@ -251,6 +256,51 @@ namespace SensorDataGet
         private void checkBox_lightweightMode_CheckedChanged(object sender, EventArgs e)
         {
             LightWeightMode = checkBox_lightweightMode.Checked;
+        }
+
+        private String FindArduino()
+        {
+            ManagementScope managementScope = new ManagementScope();
+            SelectQuery selectQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
+            ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(managementScope, selectQuery);
+            String allPort = "start(" + managementObjectSearcher.Get().Count + ")";
+            try
+            {
+                foreach (ManagementObject item in managementObjectSearcher.Get())
+                {
+                    string devices = item["Description"].ToString();
+                    string deviceid = item["DeviceID"].ToString();
+                    if (devices.Contains("CH340"))
+                    {
+                        return deviceid;
+                    }
+                    allPort += item["Description"].ToString() + ",";
+                }
+            }
+            catch (ManagementException e) { }
+            return allPort;
+        }//https://stackoverflow.com/questions/3293889/how-to-auto-detect-arduino-com-port
+
+
+        private void CheckArduinoConnect()
+        {
+            String PortName = FindArduino();
+            if (PortName != null)
+            {
+                serialPort_ToArduino.PortName = "COM3";//PortName;
+                serialPort_ToArduino.BaudRate = 115200;
+                try
+                {
+                    serialPort_ToArduino.Open();
+                    if (serialPort_ToArduino.IsOpen)
+                    {
+                        label_Arduino_IsConnect.Text = "已連線";
+                        label_Arduino_IsConnect.BackColor = Color.Green;
+                    }
+                }
+                catch (Exception e) { }
+            }
+            else { label7.Text = PortName; }
         }
 
     }

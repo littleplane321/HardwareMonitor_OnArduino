@@ -1,6 +1,5 @@
 #include <MCUFRIEND_kbv.h>
 #include <Adafruit_GFX.h>
-//#include <SD.h>
 //lcd pin
 #define LCD_RESET A4
 #define LCD_CS A3
@@ -8,6 +7,7 @@
 #define LCD_WR A1
 #define LCD_RD A0
 //color
+//#include <SD.h>
 #define BLACK 0xFFFF
 #define RED   0x07FF
 #define GREEN 0xF81F
@@ -53,9 +53,6 @@ void loop() {
       input=Serial.readStringUntil(':');
         data[(input.toInt())-1] = Serial.readStringUntil(',').toInt();
         dataupdate(input.toInt());
-        tft.fillRect(0,0,100,40,BLACK);
-        tft.setCursor(0,0);
-        tft.print(data[0]);
         delay(10);
       updatefinish = true;
       digitalWrite(13,LOW);
@@ -124,7 +121,7 @@ void BarUpdate(int posi,int bar_size,int data,int lastdata){//bar_size 0 = cpu g
     }else{
       tft.fillRect(30+(data*2),posi,((lastdata-data)*2),13,BLACK);
     }
-    tft.fillRect(255,posi,33,15,BLACK);
+    tft.fillRect(255,posi,35,15,BLACK);
     tft.setCursor(255,posi);
     tft.print(data);
     break; 
@@ -181,7 +178,7 @@ void printstruct(){
   tft.print("1000/1000 MB");
   //========== RAM ===============
   tft.setTextSize(3); 
-  tft.setCursor(90,360);
+  tft.setCursor(130,360);
   tft.println("RAM");
   tft.setTextSize(2);
   tft.println("\n Used/Total:");
