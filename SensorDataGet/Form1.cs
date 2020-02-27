@@ -10,8 +10,6 @@ using System.Windows.Forms;
 using System.IO.MemoryMappedFiles;
 using System.IO;
 using System.Xml;
-using System.Management;
-using System.Threading;
 
 namespace SensorDataGet
 {
@@ -23,15 +21,13 @@ namespace SensorDataGet
         public bool LightWeightMode = false;
         private int DataSetRowCount = 0;
         private string[] data = new string[11];//[0]=cpu util [1]=cpu temp  [2]=gpu clock  [3]=gpu util
-                                               //[4]=gpu temp [5]=vram util [6]=vram free  [7]=vram total
-                                               //[8]=ram util [9]=ram used  [10]=ram free
+                                               //[4]=gpu temp [5]=vram util [6]=vram used  [7]=vram free
+                                                //[8]=ram util [9]=ram used  [10]=ram free
 
         public 電腦數據顯示程式()
         {
             InitializeComponent();
             GetDataFromAIDA64();
-            CheckArduinoConnect();
-            
         }
 
         private void checkBox_update_0_CheckedChanged(object sender, EventArgs e){
@@ -96,9 +92,7 @@ namespace SensorDataGet
         private void timer1_Tick(object sender, EventArgs e)
         {
             GetDataFromAIDA64();
-            String temp = TheStringToSent();
-            serialPort_ToArduino.WriteLine(temp);
-            label5.Text = temp;
+            label5.Text = TheStringToSent();
         }
 
         private String TheStringToSent() {
@@ -110,13 +104,12 @@ namespace SensorDataGet
                     /*if (treeView.Nodes[x].Nodes[y].Checked) {
                         StringToSent += "<" + treeView.Nodes[x].Text + ">" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[1].InnerText + ":" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText+"\n";
                     }*/
-                    switch (DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[1].InnerText)
-                    {
+                    switch (DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[1].InnerText){
                         case "CPU Utilization":
                             data[0] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
                             break;
                         case "Memory Utilization":
-                            data[8] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            data[8] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText; 
                             break;
                         case "Used Memory":
                             data[9] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
@@ -147,19 +140,18 @@ namespace SensorDataGet
                             break;
                         default:
                             break;
+
                     }
                 }
             }
 
-            for (int x = 0; x < 11; x++)
-            {
-                    if (data[x] != null)
-                        StringToSent += (x+1)+":"+(data[x]) + ',';
-                    else
-                        StringToSent += (x+1)+":000,";
+            for (int x = 0; x < 10; x++) {
+                if(data[x] != null)
+                    StringToSent += data[x]+',';
+                else
+                    StringToSent += "000" + ',';
             }
-
-            return StringToSent;
+            return StringToSent+data[10];
         }
 
         private void InitializeForm() {
@@ -197,7 +189,7 @@ namespace SensorDataGet
                     {
                         //資料讀取(XML格式)                  
                         DataXml.LoadXml(data);
-                        //label7.Text = "狀態正常";
+                        label7.Text = "狀態正常";
                     }
                     catch(Exception e) {
                         label7.Text = "error\n (等待數秒直到錯誤解除,等太久就重開)"+"\n"+e.Message;
@@ -261,40 +253,5 @@ namespace SensorDataGet
             LightWeightMode = checkBox_lightweightMode.Checked;
         }
 
-        private String FindArduino() {
-            ManagementScope managementScope = new ManagementScope();
-            SelectQuery selectQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
-            ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(managementScope, selectQuery);
-            String allPort = "start("+ managementObjectSearcher.Get().Count+")";
-            try{
-                foreach (ManagementObject item in managementObjectSearcher.Get()){
-                    string devices = item["Description"].ToString();
-                    string deviceid = item["DeviceID"].ToString();
-                    if (devices.Contains("Arduino")){
-                        return deviceid;
-                    }
-                    allPort += item["Description"].ToString() + ",";
-                }
-            }catch (ManagementException e){ }
-            return allPort;
-        }//https://stackoverflow.com/questions/3293889/how-to-auto-detect-arduino-com-port
-
-
-        private void CheckArduinoConnect() {
-            String PortName = FindArduino();
-            if (PortName != null)
-            {
-                serialPort_ToArduino.PortName = "COM4";//PortName;
-                serialPort_ToArduino.BaudRate = 115200;
-                try
-                {
-                    serialPort_ToArduino.Open();
-                    label_Arduino_IsConnect.Text = "已連線";
-                    label_Arduino_IsConnect.BackColor = Color.Green;
-                }
-                catch (Exception e){ }
-            }
-            else { label7.Text = PortName; }
-        }
     }
 }
