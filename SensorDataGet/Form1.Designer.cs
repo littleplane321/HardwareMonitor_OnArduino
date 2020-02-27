@@ -140,10 +140,14 @@
             this.label2.Text = "顯示項目";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // serialPort_ToArduino
+            // 
+            this.serialPort_ToArduino.DiscardNull = true;
+            // 
             // timer1
             // 
             this.timer1.Enabled = true;
-            this.timer1.Interval = 1000;
+            this.timer1.Interval = 3000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // label3

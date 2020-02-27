@@ -11,6 +11,7 @@ using System.IO.MemoryMappedFiles;
 using System.IO;
 using System.Xml;
 using System.Management;
+using System.Threading;
 
 namespace SensorDataGet
 {
@@ -21,6 +22,9 @@ namespace SensorDataGet
         public bool Initialize = false;
         public bool LightWeightMode = false;
         private int DataSetRowCount = 0;
+        private string[] data = new string[11];//[0]=cpu util [1]=cpu temp  [2]=gpu clock  [3]=gpu util
+                                               //[4]=gpu temp [5]=vram util [6]=vram free  [7]=vram total
+                                               //[8]=ram util [9]=ram used  [10]=ram free
 
         public 電腦數據顯示程式()
         {
@@ -92,11 +96,9 @@ namespace SensorDataGet
         private void timer1_Tick(object sender, EventArgs e)
         {
             GetDataFromAIDA64();
-            string sendString = TheStringToSent();
-            label5.Text = sendString;
-            if (serialPort_ToArduino.IsOpen) {
-                serialPort_ToArduino.WriteLine("[1]"+sendString);
-            }
+            String temp = TheStringToSent();
+            serialPort_ToArduino.WriteLine(temp);
+            label5.Text = temp;
         }
 
         private String TheStringToSent() {
@@ -105,11 +107,58 @@ namespace SensorDataGet
             for (int x = 0; x < treeView.Nodes.Count; x++)
             {
                 for (int y = 0; y < treeView.Nodes[x].Nodes.Count; y++) {
-                    if (treeView.Nodes[x].Nodes[y].Checked) {
+                    /*if (treeView.Nodes[x].Nodes[y].Checked) {
                         StringToSent += "<" + treeView.Nodes[x].Text + ">" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[1].InnerText + ":" + DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText+"\n";
+                    }*/
+                    switch (DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[1].InnerText)
+                    {
+                        case "CPU Utilization":
+                            data[0] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "Memory Utilization":
+                            data[8] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "Used Memory":
+                            data[9] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "Free Memory":
+                            data[10] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "CPU":
+                            data[1] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "GPU Clock":
+                            data[2] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "GPU Utilization":
+                            data[3] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "GPU":
+                            data[4] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "GPU Dedicated Memory Utilization":
+                            data[5] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "GPU Used Dedicated Memory":
+                            data[6] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        case "GPU Free Dedicated Memory":
+                            data[7] = DataDictionaryFromAida64[treeView.Nodes[x].Text][y].ChildNodes[2].InnerText;
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
+
+            for (int x = 0; x < 11; x++)
+            {
+                    if (data[x] != null)
+                        StringToSent += (x+1)+":"+(data[x]) + ',';
+                    else
+                        StringToSent += (x+1)+":000,";
+            }
+
             return StringToSent;
         }
 
