@@ -65,38 +65,47 @@ void dataupdate(int flag){
     case 1:
     if(data[0]!= last_data[0]&&data[0]!=0)
       BarUpdate(40,0,data[0],last_data[0]);
+      last_data[0] = data[0];
     break;
     case 2:
     if(data[1]!= last_data[1])
       BarUpdate(72,0,data[1],last_data[1]);
+      last_data[1] = data[1];
     break;
     case 3:
     if(data[2]!= last_data[2])
       WordUpdate(80,160,55,String(data[2]));
+      last_data[2] = data[2];
     break;
     case 4:
     if(data[3]!= last_data[3])
       BarUpdate(190,0,data[3],last_data[3]);
+      last_data[3] = data[3];
     break;
     case 5:
     if(data[4]!= last_data[4])
       BarUpdate(222,0,data[4],last_data[4]);
+      last_data[4] = data[4];
     break;
     case 6:
     if(data[5]!= last_data[5])
       BarUpdate(310,1,data[5],last_data[5]);
+      last_data[5] = data[5];
     break;
     case 8:
     if(data[6]!= last_data[6])
       WordUpdate(100,330,110,(String(data[6])+"/"+String(data[7]+data[6])));
+      last_data[6] = data[6];
     break;
     case 9:
     if(data[8]!= last_data[8])
       BarUpdate(430,1,data[8],last_data[8]);
+      last_data[8] = data[8];
     break;
     case 11:
     if(data[9]!= last_data[9])
       WordUpdate(80,450,130,(String(data[9])+"/"+String(data[10]+data[9])));
+      last_data[9] = data[9];
     break;
     default:
     break;
