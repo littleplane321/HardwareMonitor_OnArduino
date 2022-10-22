@@ -1,5 +1,6 @@
 #include <MCUFRIEND_kbv.h>
 #include <Adafruit_GFX.h>
+#include <Arduino_JSON.h>
 //lcd pin
 #define LCD_RESET A4
 #define LCD_CS A3
@@ -20,11 +21,13 @@ MCUFRIEND_kbv tft; //LCD ili9486
 
 #include <Wire.h> 
 String input;
-int data[]={8,65,950,40,62,5,410,7782,40,3277,4915};//[0]=cpu util [1]=cpu temp  [2]=gpu clock  [3]=gpu util
-                                   //[4]=gpu temp [5]=vram util [6]=vram used  [7]=vram free
-                                   //[8]=ram util [9]=ram used  [10]=ram free
-int last_data[]={100,100,1000,100,100,100,100,100,100,100,100};
+int data[]={0,65,950,40,0,50,410,100,1000,3277,10,1000,1000,10};//[0]=cpu util  [1]=cpu temp  [2]=cpu clock [3]=cpu power
+                                                                //[4]=gpu util  [5]=gpu temp  [6]=gpu clock [7]=gpu power  
+                                                                //[8]=vram used [9]=vram free [10]=vram util[11]=ram used
+                                                                //[12]=ram free [13]=ram util
+int last_data[]={100,100,100,100,100,100,100,100,100,100,100,100,100,100};
 int flag=0;
+int util = 0;
 bool updatefinish = true;
    
 void setup() {
@@ -34,85 +37,89 @@ void setup() {
   tft.begin(tft.readID());
   tft.invertDisplay(true);
   int x,y;
-    tft.fillScreen(BLACK);
-  /*for(x=0;x<320;x+=10){
-    tft.drawLine(x,0,x,480,WHITE);
-    }
-   for(y=0;y<480;y+=10){
-    tft.drawLine(0,y,320,y,WHITE);
-   }*/
+  tft.fillScreen(BLACK);
   printstruct();
   pinMode(13,OUTPUT);
 }
 
 void loop() {
-  if(updatefinish){
-    if(Serial.available()>0){
-      digitalWrite(13,HIGH);
-      updatefinish = false;
-      input=Serial.readStringUntil(':');
-        data[(input.toInt())-1] = Serial.readStringUntil(',').toInt();
-        dataupdate(input.toInt());
-        delay(10);
-      updatefinish = true;
-      digitalWrite(13,LOW);
-    }    
-  } 
+  if(Serial.available()>0){
+    input=Serial.readStringUntil(':');
+      data[(input.toInt())] = Serial.readStringUntil(',').toInt();
+      dataupdate(input.toInt());
+  }   
+  
 }
 
 void dataupdate(int flag){
   switch(flag){
+    case 0:
+      if(data[0]!= last_data[0]&&data[0]!=0){
+        BarUpdate(72,0,data[0],last_data[0]);
+        last_data[0] = data[0];}
+    break;
     case 1:
-    if(data[0]!= last_data[0]&&data[0]!=0)
-      BarUpdate(40,0,data[0],last_data[0]);
-      last_data[0] = data[0];
+      if(data[1]!= last_data[1]){
+        BarUpdate(100,0,data[1],last_data[1]);
+        last_data[1] = data[1];}
     break;
     case 2:
-    if(data[1]!= last_data[1])
-      BarUpdate(72,0,data[1],last_data[1]);
-      last_data[1] = data[1];
+      if(data[2]!= last_data[2]){
+        WordUpdate(80,40,55,String(data[2])); 
+        last_data[2] = data[2];}
     break;
     case 3:
-    if(data[2]!= last_data[2])
-      WordUpdate(80,160,55,String(data[2]));
-      last_data[2] = data[2];
+      if(data[3]!= last_data[3]){
+        WordUpdate(195,40,55,String(data[3])+"W"); 
+        last_data[3] = data[3];}
     break;
     case 4:
-    if(data[3]!= last_data[3])
-      BarUpdate(190,0,data[3],last_data[3]);
-      last_data[3] = data[3];
+      if(data[4]!= last_data[4]){
+        BarUpdate(190,0,data[4],last_data[4]);
+        last_data[4] = data[4];}
     break;
     case 5:
-    if(data[4]!= last_data[4])
-      BarUpdate(222,0,data[4],last_data[4]);
-      last_data[4] = data[4];
+    if(data[5]!= last_data[5]){
+      BarUpdate(222,0,data[5],last_data[5]);
+      last_data[5] = data[5];}
     break;
     case 6:
-    if(data[5]!= last_data[5])
-      BarUpdate(310,1,data[5],last_data[5]);
-      last_data[5] = data[5];
-    break;
-    case 8:
-    if(data[6]!= last_data[6])
-      WordUpdate(100,330,110,(String(data[6])+"/"+String(data[7]+data[6])));
-      last_data[6] = data[6];
+      if(data[6]!= last_data[6]){
+        WordUpdate(80,160,55,String(data[6]));
+        last_data[6] = data[6];}
+    break;    
+    case 7:
+      if(data[7]!= last_data[7]){
+        WordUpdate(185,160,55,String(data[7])+"W"); 
+        last_data[7] = data[7];}
     break;
     case 9:
-    if(data[8]!= last_data[8])
-      BarUpdate(430,1,data[8],last_data[8]);
+      WordUpdate(100,330,110,(String(data[8])+"/"+String(data[9]+data[8])+"MB"));
       last_data[8] = data[8];
-    break;
-    case 11:
-    if(data[9]!= last_data[9])
-      WordUpdate(80,450,130,(String(data[9])+"/"+String(data[10]+data[9])));
       last_data[9] = data[9];
     break;
+    case 10:
+      if(data[10]!= last_data[10]){
+        BarUpdate(310,1,data[10],last_data[10]);
+        last_data[10] = data[10];}
+    break;       
+
+    case 11:
+      WordUpdate(120,450,130,(String(data[10])+"/"+String(data[10]+data[11])+"GB"));
+      last_data[10] = data[10];
+      last_data[11] = data[11];
+    break;
+    case 13:
+      if(data[13]!= last_data[13]){
+        BarUpdate(430,1,data[13],last_data[13]);
+        last_data[13] = data[13];}
+    break;    
     default:
     break;
     }
 }
 
-void BarUpdate(int posi,int bar_size,int data,int lastdata){//bar_size 0 = cpu gpu : 1 = ram posi in y
+void BarUpdate(int posi,int bar_size,int data,int lastdata){//bar_size 0 = cpu,gpu  1 = ram , posi in y
   switch(bar_size){
     case 0:
     if(data>lastdata){
@@ -151,13 +158,14 @@ void printstruct(){
   tft.setTextSize(3); 
   tft.println("CPU");
   tft.setTextSize(2);
+  tft.println("\nClock: 1000 MHz");
   tft.println("\nUtil:");
-  tft.fillRect(60,40,200,13,GREEN);//CPU Util REC
-  tft.setCursor(270,40);
+  tft.fillRect(60,72,200,13,GREEN);//CPU Util REC
+  tft.setCursor(270,72);
   tft.print("100%\n");
   tft.println("\nTemp:");
-  tft.fillRect(60,72,200,13,GREEN);//CPU TEMP REC
-  tft.setCursor(270,72);
+  tft.fillRect(60,100,200,13,GREEN);//CPU TEMP REC
+  tft.setCursor(270,100);
   tft.print("100C\n");
   //========== GPU ===============
   tft.setTextSize(3);
@@ -194,7 +202,7 @@ void printstruct(){
   tft.fillRect(30,430,200,13,GREEN);//RAM Util REC
   tft.setCursor(255,430);
   tft.print("100%\n");
-  tft.setCursor(80,450);//RAM USED
+  tft.setCursor(120,450);//RAM USED
   tft.setTextSize(2);
-  tft.print("10000/10000 MB");
+  tft.print("00/00 GB");
 }
