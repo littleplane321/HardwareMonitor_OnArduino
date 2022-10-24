@@ -252,6 +252,7 @@ namespace SensorDataGet
                 else {
                     label_Arduino_IsConnect.Text = "未連線";
                     label_Arduino_IsConnect.BackColor = Color.Red;
+                    CheckArduinoConnect();
                 }
             }
 
@@ -260,6 +261,7 @@ namespace SensorDataGet
         }
 
  
+
         private void treeView_AfterCheck(object sender, TreeViewEventArgs e)
         {
             foreach (TreeNode ChildNode in e.Node.Nodes) {

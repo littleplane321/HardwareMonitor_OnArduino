@@ -53,63 +53,63 @@ void loop() {
 
 void dataupdate(int flag){
   switch(flag){
-    case 0:
+    case 0://CPU util
       if(data[0]!= last_data[0]&&data[0]!=0){
         BarUpdate(72,0,data[0],last_data[0]);
         last_data[0] = data[0];}
     break;
-    case 1:
+    case 1://CPU temp
       if(data[1]!= last_data[1]){
         BarUpdate(100,0,data[1],last_data[1]);
         last_data[1] = data[1];}
     break;
-    case 2:
+    case 2://CPU Clock
       if(data[2]!= last_data[2]){
         WordUpdate(80,40,55,String(data[2])); 
         last_data[2] = data[2];}
     break;
-    case 3:
+    case 3://CPU Power
       if(data[3]!= last_data[3]){
         WordUpdate(195,40,55,String(data[3])+"W"); 
         last_data[3] = data[3];}
     break;
-    case 4:
+    case 4://GPU Util
       if(data[4]!= last_data[4]){
         BarUpdate(190,0,data[4],last_data[4]);
         last_data[4] = data[4];}
     break;
-    case 5:
+    case 5://GPU Temp
     if(data[5]!= last_data[5]){
       BarUpdate(222,0,data[5],last_data[5]);
       last_data[5] = data[5];}
     break;
-    case 6:
+    case 6://Gpu Clock
       if(data[6]!= last_data[6]){
         WordUpdate(80,160,55,String(data[6]));
         last_data[6] = data[6];}
     break;    
-    case 7:
+    case 7://GPU Power
       if(data[7]!= last_data[7]){
         WordUpdate(185,160,55,String(data[7])+"W"); 
         last_data[7] = data[7];}
     break;
-    case 9:
-      WordUpdate(100,330,110,(String(data[8])+"/"+String(data[9]+data[8])+"MB"));
+    case 9://Vram used/free
+      WordUpdate(100,330,150,(String(data[8])+"/"+String(data[9]+data[8])+"MB"));
       last_data[8] = data[8];
       last_data[9] = data[9];
     break;
-    case 10:
+    case 10://Vram Util
       if(data[10]!= last_data[10]){
         BarUpdate(310,1,data[10],last_data[10]);
         last_data[10] = data[10];}
     break;       
 
-    case 11:
-      WordUpdate(120,450,130,(String(data[10])+"/"+String(data[10]+data[11])+"GB"));
-      last_data[10] = data[10];
+    case 12://Ram used/free
+      WordUpdate(120,450,130,(String(data[11])+"/"+String(data[11]+data[12])+"GB"));
+      last_data[12] = data[12];
       last_data[11] = data[11];
     break;
-    case 13:
+    case 13://Ram Util
       if(data[13]!= last_data[13]){
         BarUpdate(430,1,data[13],last_data[13]);
         last_data[13] = data[13];}
