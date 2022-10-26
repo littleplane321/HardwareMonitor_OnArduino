@@ -1,4 +1,4 @@
-# Show_HardwareData_On_Arduino_TFTScreen
+# HardwareMonitor_OnArduino
 此系統可以讀取電腦硬體的使用狀態及參數，並顯示在一小塊TFT螢幕上。
 
 ## 系統架構
