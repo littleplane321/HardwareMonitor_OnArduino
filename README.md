@@ -11,6 +11,5 @@
 <div align=center><img src="https://github.com/littleplane321/HardwareMonitor_OnArduino/blob/OpenHardwareMonitor/Image/Screen%20demo.jpg" width="300" height="500">
 
 ## 目前發現的問題
-1.單靠 USB5V 供電似乎有些不夠在螢幕刷新及資料運算時螢幕會出現亮度下降的問題。  
-2.C# 程式在顯示硬體資料的區塊，在資料更新時會閃爍，這代表GUI的刷新邏輯還須改進。  
-3.C# 程式得GUI不會隨著視窗大小變動而變化。
+1.單靠 USB5V 供電似乎有些不夠在螢幕刷新及資料運算時螢幕會出現亮度下降的問題。   
+2.C# 程式的GUI不會隨著視窗大小變動而變化。
