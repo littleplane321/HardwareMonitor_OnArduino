@@ -113,12 +113,18 @@ namespace SensorDataGet
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+<<<<<<< Updated upstream
+=======
+            CheckArduinoConnect();
+            UpdateDataOnGui();
+>>>>>>> Stashed changes
             GetDataFromOpenHardware();
             string sendstring = SendDataToArduino();
             label5.Text = sendstring;
         }
 
 
+<<<<<<< Updated upstream
 
 
         private void GetDataFromOpenHardware()
@@ -126,6 +132,121 @@ namespace SensorDataGet
             try { computer.Open(); } catch { label_openHardware_IsConnect.Text = "未連線"; label_openHardware_IsConnect.BackColor = Color.Red; }
             label_openHardware_IsConnect.Text = "已連線"; label_openHardware_IsConnect.BackColor = Color.Green;
             treeView.Nodes.Clear();
+=======
+
+        private void UpdateDataOnGui() {
+
+            try
+            {
+                computer.Open();
+                label_openHardware_IsConnect.Text = "已連線";
+                label_openHardware_IsConnect.BackColor = Color.Green;
+            }
+            catch
+            {
+                label_openHardware_IsConnect.Text = "未連線";
+                label_openHardware_IsConnect.BackColor = Color.Red;
+            }
+
+
+            foreach (var Hardware in computer.Hardware)
+            {
+                TreeNode HardwareNode;
+                if (treeView.Nodes.ContainsKey(Hardware.Name))
+                    HardwareNode = treeView.Nodes.Find(Hardware.Name,true)[0];
+                else
+                    HardwareNode = new TreeNode(Hardware.Name);
+
+                HardwareNode.Name = Hardware.Name;
+                Hardware.Update();
+
+                //建立要傳給treenode的資料
+                foreach (var Sensor in Hardware.Sensors)
+                {
+                    string unit = " ";
+                    switch (Sensor.SensorType)
+                    {
+                        case SensorType.Clock:
+                            unit = "Hz";
+                            break;
+                        case SensorType.Data:
+                            unit = "GB";
+                            break;
+                        case SensorType.Fan:
+                            unit = "RPM";
+                            break;
+                        case SensorType.Load:
+                            unit = "%";
+                            break;
+                        case SensorType.Power:
+                            unit = "W";
+                            break;
+                        case SensorType.SmallData:
+                            unit = "MB";
+                            break;
+                        case SensorType.Temperature:
+                            unit = "°C";
+                            break;
+                        case SensorType.Throughput:
+                            unit = "MB/s";
+                            break;
+                        case SensorType.Voltage:
+                            unit = "V";
+                            break;
+                    }
+                    if (HardwareNode.Nodes.ContainsKey(Sensor.SensorType.ToString()))
+                    {
+                        if (HardwareNode.Nodes.Find(Sensor.SensorType.ToString(), true)[0].Nodes.ContainsKey(Sensor.SensorType.ToString() + "/" + Sensor.Name.ToString()))
+                            HardwareNode.Nodes.Find(Sensor.SensorType.ToString() + "/" + Sensor.Name.ToString(), true)[0].Text = Sensor.Name + ":" + string.Format("{0:0.00}", Sensor.Value) + " " + unit;
+                        else
+                        {
+                            TreeNode DataNode = new TreeNode(Sensor.Name.ToString());
+                            DataNode.Name = Sensor.SensorType.ToString() + "/" + Sensor.Name.ToString();
+                            DataNode.Text = Sensor.Name + ":" + string.Format("{0:0.00}", Sensor.Value) + " " + unit;
+                            HardwareNode.Nodes.Find(Sensor.SensorType.ToString(), true)[0].Nodes.Add(DataNode);
+                        }
+                    }
+                    else
+                    {
+                        TreeNode hardwareNode = new TreeNode(Sensor.SensorType.ToString());
+                        TreeNode DataNode = new TreeNode(Sensor.Name.ToString());
+
+                        hardwareNode.Name = Sensor.SensorType.ToString();
+                        hardwareNode.Expand();
+
+                        DataNode.Name = Sensor.SensorType.ToString() + "/" + Sensor.Name.ToString();
+                        DataNode.Text = Sensor.Name + ":" + string.Format("{0:0.00}", Sensor.Value) + " " + unit;
+
+                        hardwareNode.Nodes.Add(DataNode);
+                        HardwareNode.Nodes.Add(hardwareNode);
+                    }
+                }
+
+
+                HardwareNode.Expand();
+                if(!treeView.Nodes.ContainsKey(Hardware.Name))
+                    treeView.Nodes.Add(HardwareNode);
+            }
+            
+
+        }
+
+
+
+        private void GetDataFromOpenHardware()
+        {
+            try { 
+                computer.Open();
+                label_openHardware_IsConnect.Text = "已連線"; 
+                label_openHardware_IsConnect.BackColor = Color.Green;
+            } catch { 
+                label_openHardware_IsConnect.Text = "未連線"; 
+                label_openHardware_IsConnect.BackColor = Color.Red; 
+            }
+
+            //treeView.Nodes.Clear();
+
+>>>>>>> Stashed changes
             foreach (var Hardware in computer.Hardware) {
                 //建立要傳給Arduino的資料
                 TreeNode HardwareNode = new TreeNode(Hardware.Name);
@@ -157,7 +278,11 @@ namespace SensorDataGet
                         if (Sensor.Name == "GPU Core" && Sensor.SensorType == SensorType.Temperature)
                             data[(int)Data.gpuTemp] = (float)Sensor.Value;
                         //if (Sensor.SensorType == SensorType.Power)
+<<<<<<< Updated upstream
                             data[(int)Data.gpuPower] = (float)100;
+=======
+                        //    data[(int)Data.gpuPower] = (float)100;
+>>>>>>> Stashed changes
                         if (Sensor.Name == "GPU Core" && Sensor.SensorType == SensorType.Load)
                             data[(int)Data.gpuUtil] = (float)Sensor.Value;
                         if (Sensor.Name == "GPU Memory Free" && Sensor.SensorType == SensorType.SmallData)
@@ -181,6 +306,7 @@ namespace SensorDataGet
 
                     }
                 }
+<<<<<<< Updated upstream
 
                 //建立要傳給treenode的資料
                 foreach (var Sensor in Hardware.Sensors) {
@@ -231,6 +357,9 @@ namespace SensorDataGet
 
                 HardwareNode.Expand();
                 treeView.Nodes.Add(HardwareNode);
+=======
+                
+>>>>>>> Stashed changes
             }
                 
 
@@ -252,7 +381,10 @@ namespace SensorDataGet
                 else {
                     label_Arduino_IsConnect.Text = "未連線";
                     label_Arduino_IsConnect.BackColor = Color.Red;
+<<<<<<< Updated upstream
                     CheckArduinoConnect();
+=======
+>>>>>>> Stashed changes
                 }
             }
 
@@ -261,7 +393,10 @@ namespace SensorDataGet
         }
 
  
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
         private void treeView_AfterCheck(object sender, TreeViewEventArgs e)
         {
             foreach (TreeNode ChildNode in e.Node.Nodes) {
@@ -289,20 +424,26 @@ namespace SensorDataGet
                  }
             }
             catch (ManagementException e) { }
-            return "";
+            return null;
         }//https://stackoverflow.com/questions/3293889/how-to-auto-detect-arduino-com-port
         //只能自動找到正版Arduino 盜版的不行
 
         private void CheckArduinoConnect()
         {
             String PortName = FindArduino();
-            if (PortName != null)
+            if (!serialPort_ToArduino.IsOpen)
             {
+<<<<<<< Updated upstream
                 serialPort_ToArduino.PortName = "COM3";//正版Arduino的改成PortName;即可自動偵測 盜版的請自行輸入
                 serialPort_ToArduino.BaudRate = 115200;
                 serialPort_ToArduino.ReadTimeout = 300;
+=======
+>>>>>>> Stashed changes
                 try
                 {
+                    serialPort_ToArduino.PortName = "COM3";//正版Arduino的改成PortName;即可自動偵測 盜版的請自行輸入
+                    serialPort_ToArduino.BaudRate = 115200;
+                    serialPort_ToArduino.ReadTimeout = 300;
                     label7.Text = PortName;
                     serialPort_ToArduino.Open();
                     if (serialPort_ToArduino.IsOpen)
@@ -312,11 +453,25 @@ namespace SensorDataGet
                     }
                 }
                 catch (Exception e) {
+<<<<<<< Updated upstream
+                    label_Arduino_IsConnect.Text = "未連線";
+                    label_Arduino_IsConnect.BackColor = Color.Red;
+                }
+=======
+                    serialPort_ToArduino.Close();
                     label_Arduino_IsConnect.Text = "未連線";
                     label_Arduino_IsConnect.BackColor = Color.Red;
                 }
             }
-            else { label7.Text = PortName; }
+            else {
+                label7.Text = PortName;
+>>>>>>> Stashed changes
+            }
         }
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
     }
 }

@@ -53,6 +53,7 @@ void loop() {
 
 void dataupdate(int flag){
   switch(flag){
+<<<<<<< Updated upstream
     case 0://CPU util
       if(data[0]!= last_data[0]&&data[0]!=0){
         BarUpdate(72,0,data[0],last_data[0]);
@@ -84,32 +85,87 @@ void dataupdate(int flag){
       last_data[5] = data[5];}
     break;
     case 6://Gpu Clock
+=======
+    case 0:
+      if(data[0]!= last_data[0]&&data[0]!=0){
+        BarUpdate(72,0,data[0],last_data[0]);
+        last_data[0] = data[0];}
+    break;
+    case 1:
+      if(data[1]!= last_data[1]){
+        BarUpdate(100,0,data[1],last_data[1]);
+        last_data[1] = data[1];}
+    break;
+    case 2:
+      if(data[2]!= last_data[2]){
+        WordUpdate(80,40,55,String(data[2])); 
+        last_data[2] = data[2];}
+    break;
+    case 3:
+      if(data[3]!= last_data[3]){
+        WordUpdate(195,40,55,String(data[3])+"W"); 
+        last_data[3] = data[3];}
+    break;
+    case 4:
+      if(data[4]!= last_data[4]){
+        BarUpdate(190,0,data[4],last_data[4]);
+        last_data[4] = data[4];}
+    break;
+    case 5:
+    if(data[5]!= last_data[5]){
+      BarUpdate(222,0,data[5],last_data[5]);
+      last_data[5] = data[5];}
+    break;
+    case 6:
+>>>>>>> Stashed changes
       if(data[6]!= last_data[6]){
         WordUpdate(80,160,55,String(data[6]));
         last_data[6] = data[6];}
     break;    
+<<<<<<< Updated upstream
     case 7://GPU Power
+=======
+    case 7:
+>>>>>>> Stashed changes
       if(data[7]!= last_data[7]){
         WordUpdate(185,160,55,String(data[7])+"W"); 
         last_data[7] = data[7];}
     break;
+<<<<<<< Updated upstream
     case 9://Vram used/free
       WordUpdate(100,330,150,(String(data[8])+"/"+String(data[9]+data[8])+"MB"));
       last_data[8] = data[8];
       last_data[9] = data[9];
     break;
     case 10://Vram Util
+=======
+    case 9:
+      WordUpdate(100,330,110,(String(data[8])+"/"+String(data[9]+data[8])+"MB"));
+      last_data[8] = data[8];
+      last_data[9] = data[9];
+    break;
+    case 10:
+>>>>>>> Stashed changes
       if(data[10]!= last_data[10]){
         BarUpdate(310,1,data[10],last_data[10]);
         last_data[10] = data[10];}
     break;       
 
+<<<<<<< Updated upstream
     case 12://Ram used/free
       WordUpdate(120,450,130,(String(data[11])+"/"+String(data[11]+data[12])+"GB"));
       last_data[12] = data[12];
       last_data[11] = data[11];
     break;
     case 13://Ram Util
+=======
+    case 11:
+      WordUpdate(120,450,130,(String(data[10])+"/"+String(data[10]+data[11])+"GB"));
+      last_data[10] = data[10];
+      last_data[11] = data[11];
+    break;
+    case 13:
+>>>>>>> Stashed changes
       if(data[13]!= last_data[13]){
         BarUpdate(430,1,data[13],last_data[13]);
         last_data[13] = data[13];}
